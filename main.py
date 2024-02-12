@@ -13,6 +13,7 @@ class Window(QWidget):
         self.layout = QVBoxLayout()
         self.wid = QWidget()
         self.balance = QLineEdit()
+        self.balance.setText('0')
 
         button_new_transaction = QPushButton()
         button_edit_transaction = QPushButton()
@@ -31,13 +32,13 @@ class Window(QWidget):
         self.e1.setValidator(QIntValidator())
         self.e1.setAlignment(Qt.AlignRight)
 
-        e2 = QDateEdit()
-        e2.setAlignment(Qt.AlignRight)
+        self.current_date = QDateEdit()
+        self.current_date.setAlignment(Qt.AlignRight)
         d = QDate(int(str(date_now).split('-')[0]), int(str(date_now).split('-')[1]), int(str(date_now).split('-')[2][:2]))
-        e2.setDate(d)
+        self.current_date.setDate(d)
         
-        e3 = QLineEdit()
-        e3.setAlignment(Qt.AlignRight)
+        self.e3 = QLineEdit()
+        self.e3.setAlignment(Qt.AlignRight)
 
         self.r1 = QRadioButton("Expenditure")
         self.r2 = QRadioButton("Income")
@@ -48,9 +49,9 @@ class Window(QWidget):
         self.b1 = QPushButton("Submit")
 
         flo.addRow(QLabel("Type"),hbox)
-        flo.addRow("date validator", e2)
+        flo.addRow("date validator", self.current_date)
         flo.addRow("integer validator", self.e1)
-        flo.addRow("category", e3)
+        flo.addRow("category", self.e3)
         flo.addRow(self.b1)
 
         self.b1.clicked.connect(self.func_balance_change)
@@ -67,58 +68,31 @@ class Window(QWidget):
         self.layout.addWidget(self.balance)
         
         self.setLayout(self.layout)
-        
 
-
-    # def func_new_transaction(self):
-    #     hbox = QHBoxLayout()
-    #     flo = QFormLayout()
-    #     date_now = datetime.datetime.now()
-
-    #     self.e1 = QLineEdit()
-    #     self.e1.setValidator(QIntValidator())
-    #     self.e1.setAlignment(Qt.AlignRight)
-
-    #     e2 = QDateEdit()
-    #     e2.setAlignment(Qt.AlignRight)
-    #     d = QDate(int(str(date_now).split('-')[0]), int(str(date_now).split('-')[1]), int(str(date_now).split('-')[2][:2]))
-    #     e2.setDate(d)
-        
-    #     e3 = QLineEdit()
-    #     e3.setAlignment(Qt.AlignRight)
-
-    #     self.r1 = QRadioButton("Expenditure")
-    #     self.r2 = QRadioButton("Income")
-
-    #     hbox.addWidget(self.r1)
-    #     hbox.addWidget(self.r2)
-
-    #     self.b1 = QPushButton("Submit")
-
-    #     flo.addRow(QLabel("Type"),hbox)
-    #     flo.addRow("date validator", e2)
-    #     flo.addRow("integer validator", self.e1)
-    #     flo.addRow("category", e3)
-    #     flo.addRow(self.b1)
-
-    #     self.b1.clicked.connect(self.func_balance_change)
-    #     self.wid.setLayout(flo)
-    #     self.wid.show()
 
     def func_balance_change(self):
         if self.r1.isChecked():
-            self.balance.setText(str(-abs(int(self.e1.text()))))
+            negative_number_calculation = str(int(self.e1.text()) - int(self.balance.text()))
+            self.balance.setText(str(-int(negative_number_calculation)))
         else:
-            self.balance.setText(self.e1.text())
+            self.positive_number_calculation = str(int(self.e1.text()) + int(self.balance.text()))
+            self.balance.setText(self.positive_number_calculation)
+            self.func_add_transaction_file()
+            
 
+        self.e1.clear()
+        self.e3.clear()
         self.balance.setReadOnly(True)
         self.wid.hide()
-        
+
+
+    def func_add_transaction_file(self):
+        with open('D:/Project/Wallet-Watcher/balance_sheet_actions.txt', 'a', encoding="utf8") as file:
+            file.write(f'Income: {self.positive_number_calculation}, Category: {self.e3.text()}, Date: {self.current_date.text()}')
+
 
     def func_show(self):
         self.wid.show()
-
-    # def func_hide(self):
         
         
 
